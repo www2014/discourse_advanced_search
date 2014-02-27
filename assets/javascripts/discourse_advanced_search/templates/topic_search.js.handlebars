@@ -1,16 +1,59 @@
-{{view Discourse.SearchTextField valueBinding="term" searchContextBinding="searchContext" id="search-term2"}}
-{{#unless loading}}
+{{customHTML "top"}}
 
-  {{#unless noResults}}
+<div class='list-controls'>
+	<div class="container">
+    {{view Discourse.SearchTextField valueBinding="search_term" searchContextBinding="searchContext" id="search-term2"}}
+    <div class='contents'>
+      <table id='topic-list'>
+        <thead>
+        <tr>
+          <th>
+            &nbsp
+          </th>
+          {{#sortable-heading sortBy="default" sortOrder=sortOrder}}
+            {{i18n topic.title}}
+          {{/sortable-heading}}
+          {{#unless controller.hideCategory}}
+            {{#sortable-heading sortBy="category" sortOrder=sortOrder}}
+              {{i18n category_title}}
+            {{/sortable-heading}}
+          {{/unless}}
+          {{#sortable-heading sortBy="posters" sortOrder=sortOrder}}
+            {{i18n users}}
+          {{/sortable-heading}}
+          {{#sortable-heading sortBy="posts" number=true sortOrder=sortOrder}}
+            {{i18n posts}}
+          {{/sortable-heading}}
+          {{#sortable-heading sortBy="likes" number=true sortOrder=sortOrder}}
+            {{i18n likes}}
+          {{/sortable-heading}}
+          {{#sortable-heading sortBy="views" number=true sortOrder=sortOrder}}
+            {{i18n views}}
+          {{/sortable-heading}}
+          {{#sortable-heading sortBy="activity" number=true colspan="2" sortOrder=sortOrder}}
+            {{i18n activity}}
+          {{/sortable-heading}}
+        </tr>
+        </thead>
 
-    {{#each resultType in content}}
-      {{view Discourse.SearchResultsTypeView typeBinding="resultType.type" contentBinding="resultType.results"}}
-    {{/each}}
-  {{else}}
-	  <div class='no-results'>
-        {{i18n search.no_results}}
-	  </div>
-  {{/unless}}
-{{else}}
-	<div class='searching'><i class='fa fa-spinner fa-spin'></i></div>
-{{/unless}}
+          {{#if topicTrackingState.hasIncoming}}
+        <tbody>
+        <tr>
+          <td colspan="9">
+            <div class='alert alert-info clickable' {{action showInserted}}>
+                        {{countI18n new_topics_inserted count=topicTrackingState.incomingCount}}
+                        {{i18n show_new_topics}}
+            </div>
+          </td>
+        </tr>
+        </tbody>
+          {{/if}}
+
+          {{each topics itemController="topicListItem" itemViewClass="Discourse.TopicListItemView"}}
+      </table>
+    </div>
+  </div>
+</div>
+
+
+{{customHTML "bottom"}}

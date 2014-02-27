@@ -3,6 +3,7 @@ Discourse.SearchController.reopen({
     moreOfType: function(type) {
       if(type == 'topic'){
         term = this.get('term');
+        this.set('search_term', term);
         this.transitionToRoute('search_topics.query', { query: term });
       }else{
         this._super(type);
@@ -38,12 +39,28 @@ Discourse.SearchController.reopen({
         self.set('resultCount', index);
         self.set('content', results);
         self.set('urls', urls);
+        self.set('topics', self.get_topics_from_search(results));
       }
       self.set('loading', false);
     }).catch(function() {
       self.set('loading', false);
     });
     return searcher;
-  }
+  },
 
+  filterTopics: Discourse.debounce(function() {
+    this.set('term', this.get('search_term'));
+    return this.searchTopicForTerm();
+  }, 250).observes('search_term'),
+
+  get_topics_from_search: function(results){
+    var topics = Em.A();
+
+    if(results[0].type == "topic"){
+      results[0].results.forEach(function(topic){
+        topics.addObject(Discourse.Topic.create(topic));
+      });
+    }
+    return topics;
+  }
 });
