@@ -49,7 +49,11 @@ Discourse.SearchController.reopen({
   },
 
   filterTopics: Discourse.debounce(function() {
-    this.set('term', this.get('search_term'));
+    var search_term = this.get('search_term');
+    this.set('term', search_term);
+    if(search_term){
+      Discourse.URL.replaceState(search_term);
+    }
     return this.searchTopicForTerm();
   }, 250).observes('search_term'),
 
