@@ -1,0 +1,16 @@
+{{view Discourse.SearchTextField valueBinding="term" searchContextBinding="searchContext" id="search-term2"}}
+{{#unless loading}}
+
+  {{#unless noResults}}
+
+    {{#each resultType in content}}
+      {{view Discourse.SearchResultsTypeView typeBinding="resultType.type" contentBinding="resultType.results"}}
+    {{/each}}
+  {{else}}
+	  <div class='no-results'>
+        {{i18n search.no_results}}
+	  </div>
+  {{/unless}}
+{{else}}
+	<div class='searching'><i class='fa fa-spinner fa-spin'></i></div>
+{{/unless}}

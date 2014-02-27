@@ -8,7 +8,8 @@ Discourse.SearchTopic = {
     if (opts.searchContext) {
       data.search_context = {
         type: opts.searchContext.type,
-        id: opts.searchContext.id
+        id: opts.searchContext.id,
+        type_filter: 'topic'
       };
     }
 
