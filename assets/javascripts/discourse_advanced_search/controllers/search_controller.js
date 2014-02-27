@@ -22,7 +22,6 @@ Discourse.SearchController.reopen({
         self.set('noResults', results.length === 0);
 
         var index = 0;
-        console.log(results);
         results = _(['topic'])
           .map(function(n){
             return _(results).where({type: n}).first();
@@ -40,7 +39,6 @@ Discourse.SearchController.reopen({
         self.set('content', results);
         self.set('urls', urls);
       }
-      console.log(self);
       self.set('loading', false);
     }).catch(function() {
       self.set('loading', false);

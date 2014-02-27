@@ -13,7 +13,9 @@ Discourse.SearchTopic = {
       };
     }
 
-    return Discourse.ajax('/search/topics/q/'+ term, { data: data });
+    return PreloadStore.getAndRemove("topic_search", function() {
+      return Discourse.ajax('/search/topics/q/'+ term, { data: data });
+    });
   }
 
 };

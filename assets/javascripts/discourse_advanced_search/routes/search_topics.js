@@ -8,7 +8,7 @@ Discourse.SearchTopicsRoute = Discourse.Route.extend({
 
   renderTemplate: function() {
     var controller = this.controllerFor('search');
-    this.render('templates/topic_search', {
+    this.render('discourse_advanced_search/templates/topic_search', {
       controller: controller
     });
   }
