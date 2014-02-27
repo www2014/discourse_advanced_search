@@ -42,8 +42,8 @@ Discourse.SearchController.reopen({
         self.set('topics', self.get_topics_from_search(results));
       }
       self.set('loading', false);
-    }).catch(function() {
-      self.set('loading', false);
+    //}).catch(function() {
+    //  self.set('loading', false);
     });
     return searcher;
   },
@@ -59,7 +59,9 @@ Discourse.SearchController.reopen({
 
   get_topics_from_search: function(results){
     var topics = Em.A();
-
+    if(results.length === 0){
+      return topics;
+    }
     if(results[0].type == "topic"){
       results[0].results.forEach(function(topic){
         topics.addObject(Discourse.Topic.create(topic));
