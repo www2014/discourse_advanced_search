@@ -24,7 +24,7 @@ class TopicSearchResult < Search::SearchResult
     json
   end
 
-  def self.from_topic(topic)
+  def self.from_topic(topic, url)
     TopicSearchResult.new(type: :topic,
                           id: topic.id,
                           title: topic.title,
@@ -40,19 +40,9 @@ class TopicSearchResult < Search::SearchResult
   def self.from_post(post)
     if post.post_number == 1
       # we want the topic link when it's the OP
-      TopicSearchResult.from_topic(post.topic)
+      TopicSearchResult.from_topic(post.topic, post.topic.relative_url)
     else
-      topic = post.topic
-      TopicSearchResult.new(type: :topic,
-                            id: topic.id,
-                            title: topic.title,
-                            url: post.url,
-                            posts_count: topic.posts_count,
-                            like_count: topic.like_count,
-                            views: topic.views,
-                            created_at: topic.created_at,
-                            bumped_at: topic.bumped_at,
-                            bumped: topic.created_at < topic.bumped_at)
+      TopicSearchResult.from_topic(post.topic, post.url)
     end
   end
 end
