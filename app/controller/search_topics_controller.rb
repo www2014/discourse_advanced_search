@@ -14,7 +14,7 @@ class SearchTopicsController < SearchController
     search_args = {guardian: guardian}
     search_args[:type_filter] = 'topic'
 
-    search = ::TopicSearch.new(params[:term], search_args.symbolize_keys)
+    search = ::TopicSearch.new(params[:term], current_user, search_args.symbolize_keys)
 
     respond_to do |format|
       format.html do

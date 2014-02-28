@@ -1,5 +1,6 @@
 class TopicSearch < Search
-  def initialize(term, opts=nil)
+  def initialize(term, current_user, opts=nil)
+    @current_user = current_user
     super(term, opts)
   end
 
@@ -30,7 +31,7 @@ class TopicSearch < Search
             end
 
     posts.each do |post|
-      @results.add_result(TopicSearchResult.from_post(post))
+      @results.add_result(TopicSearchResult.from_post(post, @current_user))
     end
   end
 end
