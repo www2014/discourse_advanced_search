@@ -27,7 +27,7 @@
 	  <div class="topic-excerpt">
         {{{excerpt}}}
         {{#if excerptTruncated}}
-          {{#unless canClearPin}}<a href="{{url}}">{{i18n read_more}}</a>{{/unless}}
+          {{#unless canClearPin}}<a href="{{relative_url}}">{{i18n read_more}}</a>{{/unless}}
         {{/if}}
         {{#if canClearPin}}
 			<a href="#" {{action clearPin this}} title="{{i18n topic.clear_pin.help}}">{{i18n topic.clear_pin.title}}</a>
@@ -36,7 +36,7 @@
   {{/if}}
 </td>
 
-<td class='num posts'><a href="{{lastUnreadUrl}}" class='badge-posts'>{{number posts_count numberKey="posts_long"}}</a></td>
+<td class='num posts'><a href="{{relative_url}}" class='badge-posts'>{{number posts_count numberKey="posts_long"}}</a></td>
 
 <td class='num likes'>
   {{#if like_count}}
