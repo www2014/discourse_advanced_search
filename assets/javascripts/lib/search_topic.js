@@ -15,7 +15,7 @@ Discourse.SearchTopic = {
     }
 
     return PreloadStore.getAndRemove("topic_search", function() {
-      if(term.length === 0){
+      if(typeof term == "undefined" || term.length === 0){
         return [];
       }
       return Discourse.ajax('/search/topics/q/'+ term, { data: data });
