@@ -18,7 +18,7 @@ Discourse.SearchTopic = {
       if(typeof term == "undefined" || term.length === 0){
         return [];
       }
-      return Discourse.ajax('/search/topics/q/'+ term, { data: data });
+      return Discourse.ajax('/topics/search/q/'+ term, { data: data });
     });
   }
 

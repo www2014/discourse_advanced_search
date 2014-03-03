@@ -1,6 +1,6 @@
 require_dependency 'search'
 
-class SearchTopicsController < SearchController
+class TopicsSearchController < SearchController
 
   skip_before_filter :check_xhr, only: [:topic_query, :index]
 
