@@ -1,12 +1,13 @@
 Discourse.TopicSearchController = Em.ObjectController.extend(Discourse.Presence, {
 
+  needs: "search",
+  term: Em.computed.alias("controllers.search.term"),
+
   content: [],
   resultCount: false,
   urls: [],
   topics: Em.A(),
   loading: true,
-  term: "",
-  search_term: "",
 
   searchTopicForTerm: function(){
     var self = this;
@@ -39,16 +40,16 @@ Discourse.TopicSearchController = Em.ObjectController.extend(Discourse.Presence,
   },
 
   filterTopics: Discourse.debounce(function() {
-    var search_term = this.get('search_term');
-    if(typeof search_term == "undefined"  || search_term.lenght === 0){
+    var term = this.get('term');
+    if(typeof term == "undefined"  || term.lenght === 0){
       return;
     }
-    this.set('term', search_term);
-    if(search_term){
-      Discourse.URL.replaceState(search_term);
+
+    if(term){
+      Discourse.URL.replaceState(term);
     }
     return this.searchTopicForTerm();
-  }, 250).observes('search_term'),
+  }, 250).observes('term'),
 
   get_topics_from_search: function(results){
     var topics = Em.A();
