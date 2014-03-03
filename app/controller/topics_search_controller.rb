@@ -18,7 +18,7 @@ class TopicsSearchController < SearchController
 
     topic_list = TopicList.new(:latest, current_user, search.execute)
 
-    topic_search_view_serializer = TopicSearchViewSerializer.new(topic_list, scope: guardian, root: false)
+    topic_search_view_serializer = TopicSearchViewSerializer.new(topic_list, scope: guardian)
 
     respond_to do |format|
       format.html do

@@ -1,4 +1,4 @@
-class TopicSearchItemSerializer < ListableTopicSerializer
+class TopicSearchItemSerializer < TopicListItemSerializer
 
   attributes :relative_url
 
