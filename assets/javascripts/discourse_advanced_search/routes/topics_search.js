@@ -1,5 +1,6 @@
 Discourse.TopicsSearchRoute = Discourse.Route.extend({
 
+  
   setupController: function() {
     var controller = this.controllerFor('topic_search');
 

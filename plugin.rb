@@ -7,5 +7,5 @@
 require File.expand_path('../lib/discourse_advanced_search/engine', __FILE__)
 
 register_asset('javascripts/discourse_advanced_search.js', :server_side)
-#register_asset('stylesheets/discourse_user_directory.css')
+register_asset('stylesheets/discourse_advanced_search.css')
 
