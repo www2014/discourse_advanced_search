@@ -11,7 +11,10 @@ Discourse.TopicSearchController = Em.ObjectController.extend(Discourse.Presence,
 
   init: function(){
     var self = this;
-    self.set('term', 'rep'); // remove this wehn complete
+    if ( typeof term == "undefined"){
+      var path_split = window.location.pathname.split('/');
+      self.set('term', path_split[path_split.length -1]);
+    }
   },
 
   searchTopicForTerm: function(){
