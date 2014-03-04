@@ -9,13 +9,22 @@ Discourse.TopicSearchController = Em.ObjectController.extend(Discourse.Presence,
   topics: Em.A(),
   loading: true,
 
+  init: function(){
+    var self = this;
+    self.set('term', 'rep'); // remove this wehn complete
+  },
+
   searchTopicForTerm: function(){
     var self = this;
+    var sortOrder = this.get('sortOrder');
     var searcher = Discourse.SearchTopic.forTerm(self.get('term'), {
-      searchContext: self.get('searchContext')
+      searchContext: self.get('searchContext'),
+      sortContext: {
+        sort_order: sortOrder.get('order'),
+        sort_descending: sortOrder.get('descending')
+      }
     });
     return searcher.then(function(results) {
-
       var urls = [];
       if (results) {
         var topicView = results.topic_search_view;
@@ -63,6 +72,20 @@ Discourse.TopicSearchController = Em.ObjectController.extend(Discourse.Presence,
     });
 
     return topics;
-  }
+  },
+
+  sortOrder: function() {
+    return Discourse.SortOrder.create();
+  }.property(),
+
+  /**
+   If the sort order changes, replace the topics in the list with the new
+   order.
+
+   @observes sortOrder
+   **/
+  _sortOrderChanged: function() {
+    return this.searchTopicForTerm();
+  }.observes('sortOrder.order', 'sortOrder.descending')
 
 });

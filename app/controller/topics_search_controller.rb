@@ -13,8 +13,9 @@ class TopicsSearchController < SearchController
 
     search_args = {guardian: guardian}
     search_args[:type_filter] = 'topic'
+    search_args[:sort_context] = params[:sort_context] if params[:sort_context]
 
-    search = ::TopicSearchView.new(params[:term], search_args.symbolize_keys)
+    search = TopicSearchView.new(params[:term], search_args.symbolize_keys)
 
     topic_list = TopicList.new(:latest, current_user, search.execute)
 

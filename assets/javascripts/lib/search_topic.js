@@ -13,6 +13,12 @@ Discourse.SearchTopic = {
         type_filter: 'topic'
       };
     }
+    if (opts.sortContext) {
+      data.sort_context = {
+        sort_order: opts.sortContext.sort_order,
+        sort_descending: opts.sortContext.sort_descending
+      }
+    }
 
     return PreloadStore.getAndRemove("topic_search", function() {
       if(typeof term == "undefined" || term.length === 0){
