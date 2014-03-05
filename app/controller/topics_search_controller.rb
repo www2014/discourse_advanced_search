@@ -2,11 +2,7 @@ require_dependency 'search'
 
 class TopicsSearchController < SearchController
 
-  skip_before_filter :check_xhr, only: [:topic_query, :index]
-
-  def index
-
-  end
+  skip_before_filter :check_xhr, only: [:topic_query]
 
   def topic_query
     params.require(:term)
