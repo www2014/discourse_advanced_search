@@ -17,6 +17,10 @@ Discourse.TopicSearchController = Em.ObjectController.extend(Discourse.Presence,
     }
   },
 
+  categories: function() {
+    return Discourse.Category.list();
+  }.property(),
+
   searchTopicForTerm: function(){
     var self = this;
     var sortOrder = this.get('sortOrder');

@@ -4,7 +4,13 @@
 	<div class="container">
     {{view Discourse.SearchTextField valueBinding="term" searchContextBinding="searchContext" id="topic-search-term"}}
     <div class='contents'>
-      <table id='topic-list'>
+      <div style="float:left">
+        <ul class="search-categories-list">
+          {{#each categories}}<div class='cat'>{{categorySearchLink this allowUncategorized=false noSubcategories=true}}</div>{{/each}}
+        </ul>
+      </div>
+    
+      <table id='topic-list' style="width:70%">
         <thead>
         <tr>
           <th>
