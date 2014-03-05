@@ -5,7 +5,7 @@ class TopicSearchView < Search
   end
 
   def execute
-    @topics = topic_search(posts_query(10))
+    @topics = topic_search(posts_query(25))
   end
 
   private
