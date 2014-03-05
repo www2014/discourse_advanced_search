@@ -13,6 +13,6 @@ Handlebars.registerHelper('topicSearchLink', function(property, options) {
 Handlebars.registerHelper('categorySearchLink', function(property, options) {
 	var category = Ember.Handlebars.get(this, property, options);
 	if (!(category.get("parent_category_id"))) {
-		return new Handlebars.SafeString("<li class=\"badge-category\" style=\"color: white; background-color: #"+category.color+"\">"+category.get("name")+"</li>");
+		return new Handlebars.SafeString("<li class=\"search-category\" style=\"color: white; background-color: #"+category.color+"\">"+category.get("name")+"</li>");
 	}
 });
