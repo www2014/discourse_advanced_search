@@ -1,4 +1,4 @@
-Discourse.TopicSearchController = Em.ObjectController.extend(Discourse.Presence, {
+Discourse.TopicSearchController = Discourse.ObjectController.extend(Discourse.Presence, {
 
   needs: "search",
   term: Em.computed.alias("controllers.search.term"),
@@ -7,8 +7,8 @@ Discourse.TopicSearchController = Em.ObjectController.extend(Discourse.Presence,
   content: [],
   resultCount: false,
   urls: [],
-  topics: Em.A(),
   loading: true,
+  topicStream: null,
 
   init: function(){
     var self = this;
@@ -25,36 +25,19 @@ Discourse.TopicSearchController = Em.ObjectController.extend(Discourse.Presence,
   searchTopicForTerm: function(){
     var self = this;
     var sortOrder = this.get('sortOrder');
-    var searcher = Discourse.SearchTopic.forTerm(self.get('term'), {
+
+    var topicSearch = this.get('model'),
+      topicStream = topicSearch.get('topicStream');
+
+    topicStream.forTerm(self.get('term'), {
       searchContext: self.get('searchContext'),
       sortContext: {
         sort_order: sortOrder.get('order'),
         sort_descending: sortOrder.get('descending')
       }
     });
-    return searcher.then(function(results) {
-      var urls = [];
-      if (results) {
-        var topicView = results.topic_search_view;
-        self.set('noResults', typeof topicView.topics == "undefined" || topicView.topics.length === 0);
 
-        var index = 0;
-
-        $.each(topicView.topics, function(item){
-          item.index = index++;
-          urls.pushObject(item.relative_url);
-        });
-
-        self.set('resultCount', index);
-        self.set('content', results);
-        self.set('urls', urls);
-        self.set('topics', self.get_topics_from_search(topicView));
-      }
-      self.set('loading', false);
-      //}).catch(function() {
-      //  self.set('loading', false);
-    });
-    return searcher;
+    this.set('topicStream', topicStream);
   },
 
   filterTopics: Discourse.debounce(function() {

@@ -1,5 +1,9 @@
 Discourse.TopicsSearchRoute = Discourse.Route.extend({
 
+  model: function(){
+    return Discourse.TopicSearch.create();
+  },
+
   actions: {
     search_category: function (category) {
       var controller = this.controllerFor('topic_search');
@@ -8,10 +12,9 @@ Discourse.TopicsSearchRoute = Discourse.Route.extend({
     }
   },
 
-  
-  setupController: function() {
+  setupController: function(controller, model) {
     var controller = this.controllerFor('topic_search');
-
+    controller.set('model', model);
     controller.searchTopicForTerm();
   },
 
