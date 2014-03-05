@@ -50,6 +50,11 @@ class TopicSearchView < Search
     .where("topics.archetype <> ?", Archetype.private_message)
     .references(:post_search_data, {:topic => :category})
 
+    # if category was selected
+    if @search_context.present? && @search_context.is_a?(Category)
+      posts = posts.where("categories.id = ? OR categories.parent_category_id = ?", @search_context.id,@search_context.id)
+    end
+
     sort_order = "DESC"
     if @sort_context.present?
       sort_order = @sort_context[:sort_descending] == "true" ? "DESC" : "ASC"
