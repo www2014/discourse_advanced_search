@@ -6,7 +6,7 @@
     <div class='contents'>
       <div style="float:left">
         <ul class="search-categories-list">
-          {{#each categories}}<div class='cat'>{{categorySearchLink this allowUncategorized=false noSubcategories=true}}</div>{{/each}}
+          {{#each categories}}<div class='cat' {{action 'search_category' this}}>{{categorySearchLink this allowUncategorized=false noSubcategories=true}}</div>{{/each}}
         </ul>
       </div>
     

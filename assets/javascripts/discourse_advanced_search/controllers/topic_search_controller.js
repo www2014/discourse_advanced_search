@@ -2,6 +2,7 @@ Discourse.TopicSearchController = Em.ObjectController.extend(Discourse.Presence,
 
   needs: "search",
   term: Em.computed.alias("controllers.search.term"),
+  searchContext: Em.computed.alias("controllers.search.searchContext"),
 
   content: [],
   resultCount: false,
