@@ -6,4 +6,8 @@ class TopicSearchItemSerializer < TopicListItemSerializer
     object.result_url
   end
 
+  def posters
+    []
+  end
+
 end

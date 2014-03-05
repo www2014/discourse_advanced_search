@@ -30,11 +30,10 @@ class TopicsSearchController < SearchController
     end
 
 
-    search = TopicSearchView.new(params[:term], search_args.symbolize_keys)
+    topic_search_view = TopicSearchView.new(params[:term], current_user, search_args.symbolize_keys)
 
-    topic_list = TopicList.new(:latest, current_user, search.execute)
 
-    topic_search_view_serializer = TopicSearchViewSerializer.new(topic_list, scope: guardian)
+    topic_search_view_serializer = TopicSearchViewSerializer.new(topic_search_view, scope: guardian, root: false)
 
     respond_to do |format|
       format.html do

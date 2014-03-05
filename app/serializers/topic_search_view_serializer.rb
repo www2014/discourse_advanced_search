@@ -1,5 +1,5 @@
-class TopicSearchViewSerializer < TopicListSerializer
+class TopicSearchViewSerializer < ApplicationSerializer
+    include TopicStreamSerializerMixin
 
-  has_many :topics, serializer: TopicSearchItemSerializer, embed: :objects
 
 end

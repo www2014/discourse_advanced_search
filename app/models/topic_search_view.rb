@@ -1,11 +1,13 @@
 class TopicSearchView < Search
-  def initialize(term, opts=nil)
+  include ActiveModel::Serialization
+
+  attr_reader :topics, :filtered_topics, :filtered_ids, :guardian
+
+  def initialize(term, current_user, opts=nil)
+    @guardian = Guardian.new(current_user)
     @sort_context = opts[:sort_context].present? && opts.delete(:sort_context) || {}
     super(term, opts)
-  end
-
-  def execute
-    @topics = topic_search(posts_query(25))
+    @topics = TopicList.new(:latest, current_user, topic_search(posts_query(25))).topics
   end
 
   private
