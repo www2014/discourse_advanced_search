@@ -11,7 +11,10 @@ class TopicSearchView < Search
   private
 
   def topic_search(posts)
+    single_topic_posts = only_single_topic(posts)
+
     posts.map do |post|
+      next if single_topic_posts[post.topic_id] != post
       topic = post.topic
       topic = topic.becomes(TopicSearchResult)
       if post.post_number == 1
@@ -20,7 +23,21 @@ class TopicSearchView < Search
         topic.result_url = post.url
       end
       topic
+    end.compact
+  end
+
+  def only_single_topic(posts)
+    single_topic_posts = {}
+    posts.each do |post|
+      if single_topic_posts[post.topic_id]
+        if single_topic_posts[post.topic_id].post_number > post.post_number
+          single_topic_posts[post.topic_id] = post
+        end
+      else
+        single_topic_posts[post.topic.id] = post
+      end
     end
+    single_topic_posts
   end
 
   def posts_query(limit)
