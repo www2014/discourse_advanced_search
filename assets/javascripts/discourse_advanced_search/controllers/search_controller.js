@@ -3,7 +3,7 @@ Discourse.SearchController.reopen({
     moreOfType: function(type) {
       if(type == 'topic'){
         term = this.get('term');
-        this.transitionToRoute('topics_search', { query: term });
+        this.transitionToRoute('topics_search');
       }else{
         this._super(type);
       }

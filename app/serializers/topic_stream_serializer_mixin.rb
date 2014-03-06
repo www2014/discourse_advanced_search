@@ -5,7 +5,7 @@ module TopicStreamSerializerMixin
   end
 
   def topic_stream
-    result = { topics: topics}#, stream: object.filtered_user_ids }
+    result = { topics: topics, stream: object.filtered_topic_ids }
     result
   end
 

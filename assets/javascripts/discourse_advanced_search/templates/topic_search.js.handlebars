@@ -34,26 +34,23 @@
         </tr>
         </thead>
 
-          {{#if topicTrackingState.hasIncoming}}
         <tbody>
-        <tr>
-          <td colspan="9">
-            <div class='alert alert-info clickable' {{action showInserted}}>
-                        {{countI18n new_topics_inserted count=topicTrackingState.incomingCount}}
-                        {{i18n show_new_topics}}
-            </div>
-          </td>
-        </tr>
-        </tbody>
-          {{/if}}
           {{#if topicStream.loaded}}
             {{#if topicStream.topics.length}}
-              {{each topicStream.topics itemController="topicSearchListItem" itemViewClass="Discourse.TopicSearchListItemView"}}
+              {{#unless topicStream.loadingFilter}}
+                {{each topicStream.topics itemController="topicSearchListItem" itemViewClass="Discourse.TopicSearchListItemView"}}
+
+              {{/unless}}
+
             {{else}}
               <div>We couldn't find any topics!</div>
             {{/if}}
           {{/if}}
+	  	  </tbody>
       </table>
+      {{#if topicStream.loadingBelow}}
+		    <div class='spinner'>{{i18n loading}}</div>
+      {{/if}}
       {{#if topicStream.loaded}}
 
       {{else}}

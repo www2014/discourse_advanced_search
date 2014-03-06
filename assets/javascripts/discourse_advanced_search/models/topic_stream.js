@@ -1,7 +1,7 @@
 /**
   Represents a user's stream
 
-  @class UserStream
+  @class TopicStream
   @extends Discourse.Model
   @namespace Discourse
   @module Discourse
@@ -78,7 +78,7 @@ Discourse.TopicStream = Discourse.Model.extend({
     var topicId = topic.get('id');
     if (topicId) {
       var topicIdentityMap = this.get('topicIdentityMap'),
-        existing = topicIdentityMap.get(topic.get('id'));
+        existing = topicIdentityMap.get(topic.get('result_post_id'));
 
       if (existing) {
         // If the topic is in the identity map, update it and return the old reference.
@@ -87,9 +87,204 @@ Discourse.TopicStream = Discourse.Model.extend({
       }
 
       topic.set('topicSearch', this.get('topicSearch'));
-      topicIdentityMap.set(topic.get('id'), topic);
+      topicIdentityMap.set(topic.get('result_post_id'), topic);
     }
     return topic;
+  },
+
+  /**
+   The last topic we have loaded. Useful for checking to see if we should load more
+
+   @property lastLoadedTopic
+   **/
+  lastLoadedTopic: function() {
+    return _.last(this.get('topics'));
+  }.property('topics.@each'),
+
+  /**
+   Can we append more topics to our current stream?
+
+   @property canAppendMore
+   **/
+  canAppendMore: Em.computed.and('notLoading', 'hasTopics', 'lastTopicNotLoaded'),
+
+  /**
+   Are we currently loading topics in any way?
+
+   @property loading
+   **/
+  loading: Em.computed.or('loadingBelow', 'loadingFilter'),
+
+  notLoading: Em.computed.not('loading'),
+
+  /**
+   Have we loaded any topics?
+
+   @property hasTopics
+   **/
+  hasTopics: Em.computed.gt('topics.length', 0),
+
+  lastTopicNotLoaded: Em.computed.not('loadedAllTopics'),
+
+  /**
+   Have we loaded the last topic in the stream?
+
+   @property loadedAllTopics
+   **/
+  loadedAllTopics: function() {
+    if (!this.get('hasLoadedData')) { return false; }
+    return !!this.get('topics').findProperty('result_post_id', this.get('lastTopicId'));
+  }.property('hasLoadedData', 'topics.@each.id', 'lastTopicId'),
+
+  hasLoadedData: Em.computed.and('hasTopics', 'hasStream'),
+
+  /**
+   Returns the id of the last topic in the set
+
+   @property lastTopicId
+   **/
+  lastTopicId: function() {
+    return _.last(this.get('stream'));
+  }.property('stream.@each'),
+
+  /**
+   Do we have a stream list of topic ids?
+
+   @property hasStream
+   **/
+  hasStream: Em.computed.gt('filteredTopicsCount', 0),
+
+  filteredTopicCount: Em.computed.alias('stream.length'),
+
+  /**
+   @private
+
+   Returns the index of a particular user in the stream
+
+   @method indexOf
+   @param {Discourse.User} topic The user we're looking for
+   **/
+  indexOf: function(topic) {
+    return this.get('stream').indexOf(topic.get('result_post_id'));
+  },
+
+  /**
+   @private
+
+   Given a list of topicIds, returns a list of the topics we don't have in our
+   identity map and need to load.
+
+   @method listUnloadedIds
+   @param {Array} topicIds The topic Ids we want to load from the server
+   @returns {Array} the array of topicIds we don't have loaded.
+   **/
+  listUnloadedIds: function(postIds) {
+    var unloaded = Em.A(),
+      topicIdentityMap = this.get('topicIdentityMap');
+    postIds.forEach(function(post) {
+      if (!topicIdentityMap.has(post)) { unloaded.pushObject(post); }
+    });
+    return unloaded;
+  },
+
+  /**
+   Returns the window of topics below the current set in the stream, bound by the bottom of the
+   stream. This is the collection we use when scrolling downwards.
+
+   @property nextWindow
+   **/
+  nextWindow: function() {
+    // If we can't find the last topic loaded, bail
+    var lastLoadedTopic = this.get('lastLoadedTopic');
+    if (!lastLoadedTopic) { return []; }
+
+    // Find the index of the last topic loaded, if not found, bail
+    var stream = this.get('stream');
+    var lastIndex = this.indexOf(lastLoadedTopic);
+    if (lastIndex === -1) { return []; }
+
+    // find our window of topics
+    return stream.slice(lastIndex+1, lastIndex+Discourse.SiteSettings.posts_per_page+1);
+  }.property('lastLoadedTopic', 'stream.@each'),
+
+  /**
+   @private
+
+   Returns a list of topics in order requested, by id.
+
+   @method findTopicsByIds
+   @param {Array} topicIds The topic Ids we want to retrieve, in order.
+   @returns {Ember.Deferred} a promise that will resolve to the topics in the order requested.
+   **/
+  findTopicsByPostIds: function(postIds) {
+    var unloaded = this.listUnloadedIds(postIds),
+      topicIdentityMap = this.get('topicIdentityMap');
+
+    // Load our unloaded topic by id
+    return this.loadIntoIdentityMap(unloaded).then(function() {
+      return postIds.map(function (post) {
+        return topicIdentityMap.get(post);
+      });
+    });
+  },
+
+  /**
+   @private
+
+   Loads a list of topics from the server and inserts them into our identity map.
+
+   @method loadIntoIdentityMap
+   @param {Array} topicIds The topic Ids we want to insert into the identity map.
+   @returns {Ember.Deferred} a promise that will resolve to the users in the order requested.
+   **/
+  loadIntoIdentityMap: function(postIds) {
+
+    // If we don't want any topics, return a promise that resolves right away
+    if (Em.isEmpty(postIds)) {
+      return Ember.Deferred.promise(function (p) { p.resolve(); });
+    }
+
+    var url = "/topics/search/posts.json",
+      data = { post_ids: postIds },
+      topicStream = this;
+
+    return Discourse.ajax(url, {data: data}).then(function(result) {
+      var topics = Em.get(result, "topic_stream.topics");
+      if (topics) {
+        topics.forEach(function (topic) {
+          topicStream.storeTopic(Discourse.Topic.create(topic));
+        });
+      }
+    });
+  },
+
+  /**
+   Appends the next window of topics to the stream. Call it when scrolling downwards.
+
+   @method appendMore
+   @returns {Ember.Deferred} a promise that's resolved when the topics have been added.
+   **/
+  appendMore: function() {
+    var self = this;
+
+    // Make sure we can append more topics
+    if (!self.get('canAppendMore')) { return Ember.RSVP.resolve(); }
+
+    var postIds = self.get('nextWindow');
+    if (Ember.isEmpty(postIds)) { return Ember.RSVP.resolve(); }
+
+    self.set('loadingBelow', true);
+
+    var stopLoading = function() {
+      self.set('loadingBelow', false);
+    };
+
+    return self.findTopicsByPostIds(postIds).then(function(topics) {
+      topics.forEach(function(topic) {
+        self.appendTopic(topic);
+      });
+      stopLoading();
+    }, stopLoading);
   }
 
 });

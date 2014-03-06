@@ -26,6 +26,9 @@ Discourse.TopicSearchController = Discourse.ObjectController.extend(Discourse.Pr
     var self = this;
     var sortOrder = this.get('sortOrder');
 
+    var term = this.get('term');
+    Discourse.URL.replaceState(term);
+
     var topicSearch = this.get('model'),
       topicStream = topicSearch.get('topicStream');
 
@@ -52,19 +55,6 @@ Discourse.TopicSearchController = Discourse.ObjectController.extend(Discourse.Pr
     return this.searchTopicForTerm();
   }, 250).observes('term'),
 
-  get_topics_from_search: function(topicView){
-    var topics = Em.A();
-    if(topicView.topics.length === 0){
-      return topics;
-    }
-
-    topicView.topics.forEach(function(topic){
-      topics.addObject(Discourse.Topic.create(topic));
-    });
-
-    return topics;
-  },
-
   sortOrder: function() {
     return Discourse.SortOrder.create();
   }.property(),
@@ -77,6 +67,21 @@ Discourse.TopicSearchController = Discourse.ObjectController.extend(Discourse.Pr
    **/
   _sortOrderChanged: function() {
     return this.searchTopicForTerm();
-  }.observes('sortOrder.order', 'sortOrder.descending')
+  }.observes('sortOrder.order', 'sortOrder.descending'),
+
+  /**
+   Called the the bottommost visible topics on the page changes.
+
+   @method bottomVisibleChanged
+   @params {Discourse.Topic} topic that is at the bottom
+   **/
+  loadMore: function() {
+    var topicStream = this.get('topicStream');
+    topicStream.appendMore();
+  },
+
+  loadingHTML: function() {
+    return "<div class='spinner'>" + I18n.t('loading') + "</div>";
+  }.property()
 
 });
