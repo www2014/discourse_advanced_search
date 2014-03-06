@@ -20,7 +20,8 @@ Discourse.TopicStream = Discourse.Model.extend({
 
     return Discourse.TopicStream.loadTopicSearchView(term, opts).then(function (json) {
       topicSearch.updateFromJson(json);
-      self.updateFromJson(json.topic_stream);
+      self.updateTopicsFromJson(json.topic_stream);
+      self.updateCategoriesFromJson(json.categories);
       self.setProperties({ loadingFilter: false, loaded: true });
       //Discourse.URL.set('queryParams', self.get('streamFilters'));
     });
@@ -34,7 +35,7 @@ Discourse.TopicStream = Discourse.Model.extend({
    @param {Object} topicStreamData The JSON data we want to update from.
    @method updateFromJson
    **/
-  updateFromJson: function(topicStreamData) {
+  updateTopicsFromJson: function(topicStreamData) {
     var topicStream = this,
       topics = this.get('topics');
 
@@ -51,6 +52,26 @@ Discourse.TopicStream = Discourse.Model.extend({
     }
   },
 
+
+  updateCategoriesFromJson: function(categoriesData) {
+
+    var topicStream = this,
+      categories = this.get('categories');
+
+    categories.clear();
+
+    if (categoriesData) {
+      // Load categories if present
+      categoriesData.forEach(function(category) {
+        topicStream.appendCategory(Discourse.Category.create(category));
+      });
+      delete categoriesData;
+
+      // Update our attributes
+      //topicStream.setProperties(topicStreamData);
+    }
+  },
+
   /**
    Appends a single topic into the stream.
 
@@ -62,7 +83,10 @@ Discourse.TopicStream = Discourse.Model.extend({
     this.get('topics').addObject(this.storeTopic(topic));
     return topic;
   },
-
+  appendCategory: function(category) {
+    this.get('categories').addObject(category);
+    return category;
+  },
   /**
    @private
 
@@ -104,6 +128,7 @@ Discourse.TopicStream.reopenClass({
     var topicStream = this._super.apply(this, arguments);
     topicStream.setProperties({
       topics: Em.A(),
+      categories: Em.A(),
       stream: Em.A(),
       topicIdentityMap: Em.Map.create(),
       summary: false,

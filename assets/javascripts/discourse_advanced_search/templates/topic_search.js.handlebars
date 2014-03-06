@@ -6,7 +6,11 @@
     <div class='contents'>
       <div style="float:left">
         <ul class="search-categories-list">
-          {{#each categories}}<div class='cat' {{action 'search_category' this}}>{{categorySearchLink this allowUncategorized=false noSubcategories=true}}</div>{{/each}}
+          {{#each topicStream.categories}}
+            <div class='cat' {{action 'search_category' this}}>{{categorySearchLink this allowUncategorized=false noSubcategories=true}}</div>
+            <div {{bind-attr class="expanded::hidden :category-dropdown-menu"}} data-drop-close="true">test123</div>
+
+          {{/each}}
         </ul>
       </div>
 

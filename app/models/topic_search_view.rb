@@ -10,6 +10,10 @@ class TopicSearchView < Search
     @topics = TopicList.new(:latest, current_user, topic_search(posts_query(25))).topics
   end
 
+  def categories
+    @categories = Category.joins(topics: {posts: :post_search_data}).where(posts: {id: posts_query})    
+  end
+
   private
 
   def topic_search(posts)
@@ -42,13 +46,13 @@ class TopicSearchView < Search
     single_topic_posts
   end
 
-  def posts_query(limit)
+  def posts_query(limit=nil)
     posts = Post.includes(:post_search_data, {:topic => :category})
     .where("post_search_data.search_data @@ #{ts_query}")
     .where("topics.deleted_at" => nil)
     .where("topics.visible")
     .where("topics.archetype <> ?", Archetype.private_message)
-    .references(:post_search_data, {:topic => :category})
+    #.references(:post_search_data, {:topic => :category})
 
     # if category was selected
     if @search_context.present? && @search_context.is_a?(Category)
@@ -97,7 +101,12 @@ class TopicSearchView < Search
     else
       posts = posts.where("(categories.id IS NULL) OR (NOT categories.read_restricted)").references(:categories)
     end
-    posts.limit(limit)
+
+    if limit
+      posts.limit(limit)
+    else
+      posts
+    end
   end
 
 end
