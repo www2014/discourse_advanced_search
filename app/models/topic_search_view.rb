@@ -3,11 +3,21 @@ class TopicSearchView < Search
 
   attr_reader :topics, :filtered_topics, :filtered_ids, :guardian
 
-  def initialize(term, current_user, opts=nil)
+  def initialize(current_user, opts=nil)
     @guardian = Guardian.new(current_user)
     @sort_context = opts[:sort_context].present? && opts.delete(:sort_context) || {}
+    term = opts.delete(:term)
     super(term, opts)
-    @topics = TopicList.new(:latest, current_user, topic_search(posts_query(25))).topics
+
+    if opts[:post_ids]
+      @topics = TopicList.new(:latest, current_user, topic_search(Post.where(id: opts[:post_ids]))).topics
+    else
+      @topics = TopicList.new(:latest, current_user, topic_search(posts_query(25))).topics
+    end
+  end
+
+  def filtered_topic_ids
+    @filtered_topic_ids = @term ? posts_query(500).pluck(:id) : []
   end
 
   def categories
@@ -28,6 +38,7 @@ class TopicSearchView < Search
       else
         topic.result_url = post.url
       end
+      topic.result_post_id = post.id
       topic
     end.compact
   end
