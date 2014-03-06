@@ -12,16 +12,16 @@ class TopicSearchView < Search
     if opts[:post_ids]
       @topics = TopicList.new(:latest, current_user, topic_search(Post.where(id: opts[:post_ids]))).topics
     else
-      @topics = TopicList.new(:latest, current_user, topic_search(posts_query(25))).topics
+      @topics = TopicList.new(:latest, current_user, topic_search(posts_query(limit: 25))).topics
     end
   end
 
   def filtered_topic_ids
-    @filtered_topic_ids = @term ? posts_query(500).pluck(:id) : []
+    @filtered_topic_ids = @term ? posts_query(limit: 500).pluck(:id) : []
   end
 
   def categories
-    @categories = Category.joins(topics: {posts: :post_search_data}).where(posts: {id: posts_query})    
+    @categories = @term ? Category.joins(topics: {posts: :post_search_data}).where(posts: {id: posts_query(without_category: true)}).distinct : []
   end
 
   private
@@ -57,7 +57,7 @@ class TopicSearchView < Search
     single_topic_posts
   end
 
-  def posts_query(limit=nil)
+  def posts_query(options={})
     posts = Post.includes(:post_search_data, {:topic => :category})
     .where("post_search_data.search_data @@ #{ts_query}")
     .where("topics.deleted_at" => nil)
@@ -66,7 +66,7 @@ class TopicSearchView < Search
     #.references(:post_search_data, {:topic => :category})
 
     # if category was selected
-    if @search_context.present? && @search_context.is_a?(Category)
+    if @search_context.present? && @search_context.is_a?(Category) && options[:without_category].blank?
       posts = posts.where("categories.id = ? OR categories.parent_category_id = ?", @search_context.id,@search_context.id)
     end
 
@@ -89,18 +89,10 @@ class TopicSearchView < Search
 
     # If we have a search context, prioritize those posts first
     if @search_context.present?
-
-      if @search_context.is_a?(User)
-        # If the context is a user, prioritize that user's posts
-        posts = posts.order("CASE WHEN posts.user_id = #{@search_context.id} THEN 0 ELSE 1 END")
-      elsif @search_context.is_a?(Category)
+      if @search_context.is_a?(Category)
         # If the context is a category, restrict posts to that category
         posts = posts.order("CASE WHEN topics.category_id = #{@search_context.id} THEN 0 ELSE 1 END")
-      elsif @search_context.is_a?(Topic)
-        posts = posts.order("CASE WHEN topics.id = #{@search_context.id} THEN 0 ELSE 1 END,
-                               CASE WHEN topics.id = #{@search_context.id} THEN posts.post_number ELSE 999999 END")
       end
-
     end
 
     posts = posts.order("TS_RANK_CD(TO_TSVECTOR(#{query_locale}, topics.title), #{ts_query}) #{sort_order}")
@@ -113,8 +105,8 @@ class TopicSearchView < Search
       posts = posts.where("(categories.id IS NULL) OR (NOT categories.read_restricted)").references(:categories)
     end
 
-    if limit
-      posts.limit(limit)
+    if options[:limit]
+      posts.limit(options[:limit])
     else
       posts
     end
