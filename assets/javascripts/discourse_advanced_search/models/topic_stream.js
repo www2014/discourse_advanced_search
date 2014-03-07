@@ -12,7 +12,6 @@ Discourse.TopicStream = Discourse.Model.extend({
   forTerm: function(term, opts){
     self = this;
 
-
     // TODO: if we have all the users in the filter, don't go to the server for them.
     self.set('loadingFilter', true);
 
@@ -21,7 +20,9 @@ Discourse.TopicStream = Discourse.Model.extend({
     return Discourse.TopicStream.loadTopicSearchView(term, opts).then(function (json) {
       topicSearch.updateFromJson(json);
       self.updateTopicsFromJson(json.topic_stream);
-      self.updateCategoriesFromJson(json.categories);
+      if (!opts.without_category){
+        self.updateCategoriesFromJson(json.categories);
+      }
       self.setProperties({ loadingFilter: false, loaded: true });
       //Discourse.URL.set('queryParams', self.get('streamFilters'));
     });
@@ -61,10 +62,16 @@ Discourse.TopicStream = Discourse.Model.extend({
     categories.clear();
 
     if (categoriesData) {
+      var list = Discourse.Category.list();
       // Load categories if present
       categoriesData.forEach(function(category) {
+        if (category.subcategory_ids) {
+          category.subcategories = category.subcategory_ids.map(function(scid) { return list.findBy('id', parseInt(scid, 10)); });
+        }
+        category.active = false;
         topicStream.appendCategory(Discourse.Category.create(category));
       });
+
       delete categoriesData;
 
       // Update our attributes

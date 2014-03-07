@@ -8,7 +8,7 @@ class TopicSearchViewSerializer < ApplicationSerializer
 	  @categories = []
 	  if object.categories
 	    object.categories.each do |category|
-	      serialized_categories = BasicCategorySerializer.new(category, scope: object.guardian, root: false)
+	      serialized_categories = CategorySearchSerializer.new(category, scope: object.guardian, root: false)
 
 	      @categories << serialized_categories.as_json
 	    end

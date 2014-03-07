@@ -11,8 +11,7 @@ Handlebars.registerHelper('topicSearchLink', function(property, options) {
 });
 
 Handlebars.registerHelper('categorySearchLink', function(property, options) {
-	var category = Ember.Handlebars.get(this, property, options);
-	if (!(category.get("parent_category_id"))) {
-		return new Handlebars.SafeString("<li class=\"search-category\" style=\"color: white; background-color: #"+category.color+"\">"+category.get("name")+"</li>");
-	}
+  var category = this;
+  var action = Ember.Handlebars.helpers.action.apply(this, arguments);
+  return new Handlebars.SafeString("<li class=\"search-category\" style=\"color: white; background-color: #"+category.color+"\""+new Ember.Handlebars.SafeString(action)+">"+category.get("name")+"</li>");
 });

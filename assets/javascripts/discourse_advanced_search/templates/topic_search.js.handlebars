@@ -4,54 +4,64 @@
   <div class="container">
     {{view Discourse.SearchTextField valueBinding="term" searchContextBinding="searchContext" id="topic-search-term"}}
     <div class='contents'>
-      <div style="float:left">
+      <div class="search-categories">
         <ul class="search-categories-list">
           {{#each topicStream.categories}}
-            <div class='cat' {{action 'search_category' this}}>{{categorySearchLink this allowUncategorized=false noSubcategories=true}}</div>
-            <div {{bind-attr class="expanded::hidden :category-dropdown-menu"}} data-drop-close="true">test123</div>
-
+            {{#unless this.parent_category_id}}
+              {{categorySearchLink "search_category" this}}
+              {{#if this.subcategories}}
+                {{#if this.active }}
+                  <ul>
+                    {{#each this.subcategories}}
+                      {{categorySearchLink "search_category" this}}
+                    {{/each}}
+                  </ul>
+                {{/if}}
+              {{/if}}
+            {{/unless}}
           {{/each}}
         </ul>
       </div>
+      <div>
+        <table id='topic-list' style="width:75%; padding-left: 1px;">
+          <thead>
+          <tr>
+            <th>
+              &nbsp
+            </th>
+            {{#sortable-heading sortBy="default" sortOrder=sortOrder}}
+              {{i18n topic.title}}
+            {{/sortable-heading}}
+            {{#sortable-heading sortBy="posts" number=true sortOrder=sortOrder}}
+              {{i18n posts}}
+            {{/sortable-heading}}
+            {{#sortable-heading sortBy="likes" number=true sortOrder=sortOrder}}
+              {{i18n likes}}
+            {{/sortable-heading}}
+            {{#sortable-heading sortBy="views" number=true sortOrder=sortOrder}}
+              {{i18n views}}
+            {{/sortable-heading}}
+            {{#sortable-heading sortBy="activity" number=true colspan="2" sortOrder=sortOrder}}
+              {{i18n activity}}
+            {{/sortable-heading}}
+          </tr>
+          </thead>
 
-      <table id='topic-list' style="width:85%">
-        <thead>
-        <tr>
-          <th>
-            &nbsp
-          </th>
-          {{#sortable-heading sortBy="default" sortOrder=sortOrder}}
-            {{i18n topic.title}}
-          {{/sortable-heading}}
-          {{#sortable-heading sortBy="posts" number=true sortOrder=sortOrder}}
-            {{i18n posts}}
-          {{/sortable-heading}}
-          {{#sortable-heading sortBy="likes" number=true sortOrder=sortOrder}}
-            {{i18n likes}}
-          {{/sortable-heading}}
-          {{#sortable-heading sortBy="views" number=true sortOrder=sortOrder}}
-            {{i18n views}}
-          {{/sortable-heading}}
-          {{#sortable-heading sortBy="activity" number=true colspan="2" sortOrder=sortOrder}}
-            {{i18n activity}}
-          {{/sortable-heading}}
-        </tr>
-        </thead>
+          <tbody>
+            {{#if topicStream.loaded}}
+              {{#if topicStream.topics.length}}
+                {{#unless topicStream.loadingFilter}}
+                  {{each topicStream.topics itemController="topicSearchListItem" itemViewClass="Discourse.TopicSearchListItemView"}}
 
-        <tbody>
-          {{#if topicStream.loaded}}
-            {{#if topicStream.topics.length}}
-              {{#unless topicStream.loadingFilter}}
-                {{each topicStream.topics itemController="topicSearchListItem" itemViewClass="Discourse.TopicSearchListItemView"}}
+                {{/unless}}
 
-              {{/unless}}
-
-            {{else}}
-              <div>We couldn't find any topics!</div>
+              {{else}}
+                <div>We couldn't find any topics!</div>
+              {{/if}}
             {{/if}}
-          {{/if}}
-	  	  </tbody>
-      </table>
+          </tbody>
+        </table>
+	    </div>
       {{#if topicStream.loadingBelow}}
 		    <div class='spinner'>{{i18n loading}}</div>
       {{/if}}

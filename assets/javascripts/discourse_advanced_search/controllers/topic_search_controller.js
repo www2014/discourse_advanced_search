@@ -18,11 +18,31 @@ Discourse.TopicSearchController = Discourse.ObjectController.extend(Discourse.Pr
     }
   },
 
-  categories: function() {
-    return Discourse.Category.list();
-  }.property(),
+  activeMainCategory: function(category){
+    var self = this;
+    var topicStream = self.get('topicStream'),
+      categories = topicStream.get('categories');
 
-  searchTopicForTerm: function(){
+    if (category.subcategories){
+      var BreakException= {};
+      try {
+        categories.forEach(function(cat){
+           if(cat.get('active')){
+             cat.set('active', false);
+             throw BreakException;
+           }
+        });
+      } catch(e){
+        // do something
+      }
+      category.set('active', true);
+    }
+    return;
+  },
+
+  searchTopicForTerm: function(options){
+    if (!options) options = {};
+
     var self = this;
     var sortOrder = this.get('sortOrder');
 
@@ -33,6 +53,7 @@ Discourse.TopicSearchController = Discourse.ObjectController.extend(Discourse.Pr
       topicStream = topicSearch.get('topicStream');
 
     topicStream.forTerm(self.get('term'), {
+      without_category: options.without_category || false,
       searchContext: self.get('searchContext'),
       sortContext: {
         sort_order: sortOrder.get('order'),
@@ -66,7 +87,7 @@ Discourse.TopicSearchController = Discourse.ObjectController.extend(Discourse.Pr
    @observes sortOrder
    **/
   _sortOrderChanged: function() {
-    return this.searchTopicForTerm();
+    return this.searchTopicForTerm({without_category: true});
   }.observes('sortOrder.order', 'sortOrder.descending'),
 
   /**
