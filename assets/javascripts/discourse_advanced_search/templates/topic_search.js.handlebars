@@ -54,31 +54,38 @@
           <tbody>
             {{#if topicStream.loaded}}
               {{#if topicStream.topics.length}}
-                {{#unless topicStream.loadingFilter}}
-                  {{each topicStream.topics itemController="topicSearchListItem" itemViewClass="Discourse.TopicSearchListItemView"}}
-
-                {{/unless}}
+                {{each topicStream.topics itemController="topicSearchListItem" itemViewClass="Discourse.TopicSearchListItemView"}}
 
               {{else}}
-                <div>We couldn't find any topics!</div>
+                <tr>
+                  <td>&nbsp</td>
+                  <td>{{i18n advanced_search.no_results}}</td>
+                  <td>&nbsp</td>
+                  <td>&nbsp</td>
+                  <td>&nbsp</td>
+                  <td>&nbsp</td>
+				        </tr>
               {{/if}}
             {{/if}}
           </tbody>
         </table>
 	    </div>
-      {{#if topicStream.loadingBelow}}
-		    <div class='spinner'>{{i18n loading}}</div>
-      {{/if}}
-      {{#if topicStream.loaded}}
-
-      {{else}}
-      <div class='container'>
-        <div class='spinner'>{{i18n loading}}</div>
+		  <div class='container'>
+        {{#if topicStream.loadingBelow}}
+          <div class='spinner'></div>
+        {{/if}}
       </div>
-      {{/if}}
     </div>
   </div>
 </div>
+
+{{#unless topicStream.loadingFilter}}
+
+{{else}}
+	<div class='container'>
+		<div class='spinner'>{{i18n loading}}</div>
+	</div>
+{{/unless}}
 
 
 {{customHTML "bottom"}}

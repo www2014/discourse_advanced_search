@@ -71,6 +71,8 @@ Discourse.TopicSearchController = Discourse.ObjectController.extend(Discourse.Pr
     if(term){
       Discourse.URL.replaceState("/topics/search/q/"+term);
     }
+
+    this.set("searchContext", null);
     return this.searchTopicForTerm();
   }, 250).observes('term'),
 

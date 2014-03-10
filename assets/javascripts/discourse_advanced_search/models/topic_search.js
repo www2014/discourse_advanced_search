@@ -8,6 +8,8 @@
  **/
 Discourse.TopicSearch = Discourse.Model.extend({
 
+  query: null,
+
   topicStream: function() {
     return Discourse.TopicStream.create({topicSearch: this});
   }.property(),

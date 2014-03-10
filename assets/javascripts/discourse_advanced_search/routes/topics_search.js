@@ -1,12 +1,6 @@
 Discourse.TopicsSearchRoute = Discourse.Route.extend({
 
   model: function(){
-    var controller = this.controllerFor('topic_search'),
-      term = controller.get('term');
-    if(typeof term != "undefined"){
-      Discourse.URL.replaceState("/topics/search/q/"+term);
-    }
-
     return Discourse.TopicSearch.create();
   },
 
@@ -19,7 +13,6 @@ Discourse.TopicsSearchRoute = Discourse.Route.extend({
 
       controller.set("searchContext", {type: "category", id: category.id});
       controller.searchTopicForTerm({without_category: true});
-
     }
   },
 
