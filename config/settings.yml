@@ -1,0 +1,6 @@
+basic:
+  topics_search_per_page:
+    client: true
+    default: 25
+  topics_search_show_limit:
+    default: 500

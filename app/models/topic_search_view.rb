@@ -12,12 +12,12 @@ class TopicSearchView < Search
     if opts[:post_ids]
       @topics = TopicList.new(:latest, current_user, topic_search(Post.where(id: opts[:post_ids]))).topics
     else
-      @topics = TopicList.new(:latest, current_user, topic_search(posts_query(limit: 25))).topics
+      @topics = TopicList.new(:latest, current_user, topic_search(posts_query(limit: SiteSetting.topics_search_per_page))).topics
     end
   end
 
   def filtered_topic_ids
-    @filtered_topic_ids = @term ? posts_query(limit: 500).pluck(:id) : []
+    @filtered_topic_ids = @term ? posts_query(limit: SiteSetting.topics_search_show_limit).pluck(:id) : []
   end
 
   def categories
