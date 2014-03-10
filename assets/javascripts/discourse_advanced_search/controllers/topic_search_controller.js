@@ -46,9 +46,6 @@ Discourse.TopicSearchController = Discourse.ObjectController.extend(Discourse.Pr
     var self = this;
     var sortOrder = this.get('sortOrder');
 
-    var term = this.get('term');
-    Discourse.URL.replaceState(term);
-
     var topicSearch = this.get('model'),
       topicStream = topicSearch.get('topicStream');
 
@@ -66,12 +63,13 @@ Discourse.TopicSearchController = Discourse.ObjectController.extend(Discourse.Pr
 
   filterTopics: Discourse.debounce(function() {
     var term = this.get('term');
-    if(typeof term == "undefined"  || term.lenght === 0){
+    if(typeof term == "undefined" || term.length === 0){
+      Discourse.URL.replaceState("/topics/search/q/");
       return;
     }
 
     if(term){
-      Discourse.URL.replaceState(term);
+      Discourse.URL.replaceState("/topics/search/q/"+term);
     }
     return this.searchTopicForTerm();
   }, 250).observes('term'),

@@ -6,20 +6,24 @@
     <div class='contents'>
       <div class="search-categories">
         <ul class="search-categories-list">
-          {{#each topicStream.categories}}
-            {{#unless this.parent_category_id}}
-              {{categorySearchLink "search_category" this}}
-              {{#if this.subcategories}}
-                {{#if this.active }}
-                  <ul>
-                    {{#each this.subcategories}}
-                      {{categorySearchLink "search_category" this}}
-                    {{/each}}
-                  </ul>
+          {{#if topicStream.categories}}
+            {{#each topicStream.categories}}
+              {{#unless this.parent_category_id}}
+                {{categorySearchLink "search_category" this}}
+                {{#if this.subcategories}}
+                  {{#if this.active }}
+                    <ul>
+                      {{#each this.subcategories}}
+                        {{categorySearchLink "search_category" this}}
+                      {{/each}}
+                    </ul>
+                  {{/if}}
                 {{/if}}
-              {{/if}}
-            {{/unless}}
-          {{/each}}
+              {{/unless}}
+            {{/each}}
+          {{else}}
+            <li class="search-category">&nbsp</li>
+          {{/if}}
         </ul>
       </div>
       <div>
