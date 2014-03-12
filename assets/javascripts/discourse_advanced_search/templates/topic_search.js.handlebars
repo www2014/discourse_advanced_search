@@ -9,16 +9,23 @@
           {{#if topicStream.categories}}
             {{#each topicStream.categories}}
               {{#unless this.parent_category_id}}
-                {{categorySearchLink "search_category" this}}
-                {{#if this.subcategories}}
-                  {{#if this.active }}
-                    <ul>
-                      {{#each this.subcategories}}
-                        {{categorySearchLink "search_category" this}}
-                      {{/each}}
-                    </ul>
+                <li class="search-category">
+                  {{categorySearchLink "search_category" this}}
+                  {{#if this.subcategories}}
+                    {{#if this.active }}
+                      <ul>
+                        {{#each this.subcategories}}
+                          <li class="search-category">
+                          {{categorySearchLink "search_category" this}}
+                          {{#if this.selected}}
+                            <a href="#" {{action search_category this}}>x</a>
+                          {{/if}}
+                          </li>
+                        {{/each}}
+                      </ul>
+                    {{/if}}
                   {{/if}}
-                {{/if}}
+                </li>
               {{/unless}}
             {{/each}}
           {{else}}

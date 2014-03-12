@@ -13,5 +13,5 @@ Handlebars.registerHelper('topicSearchLink', function(property, options) {
 Handlebars.registerHelper('categorySearchLink', function(property, options) {
   var category = this;
   var action = Ember.Handlebars.helpers.action.apply(this, arguments);
-  return new Handlebars.SafeString("<li class=\"search-category\" style=\"color: white; background-color: #"+category.color+"\""+new Ember.Handlebars.SafeString(action)+">"+category.get("name")+"</li>");
+  return new Handlebars.SafeString("<div style=\"color: white; background-color: #"+category.color+"\""+new Ember.Handlebars.SafeString(action)+">"+category.get("name")+"</div>");
 });

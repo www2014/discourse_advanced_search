@@ -14,6 +14,7 @@ Discourse.TopicsSearchRoute = Discourse.Route.extend({
       controller.set("searchContext", {type: "category", id: category.id});
       controller.searchTopicForTerm({without_category: true});
     }
+
   },
 
   setupController: function(controller, model) {
