@@ -11,13 +11,18 @@
     width: 254px;
 }
 
-
-
 .search-categories-list {
     margin: 0;
 }
 
 .search-subcategories-list {
     margin: 0;
-    pading-left: 10px;
+    padding-left: 10px;
+}
+
+.active-category {
+    color: white;
+    float: left;
+    padding-left: 3px;
+    padding-right: 3px;
 }

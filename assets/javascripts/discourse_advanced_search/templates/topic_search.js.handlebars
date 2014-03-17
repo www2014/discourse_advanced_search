@@ -11,7 +11,7 @@
               {{#unless this.parent_category_id}}
                 <li class="search-category">
                   {{#if this.selected}}
-                    <div class ="fa fa-arrow-circle-o-right" style="float:left"></div>
+                    <div class ="fa fa-arrow-circle-o-right active-category"></div>
                   {{/if}}
                   {{categorySearchLink "search_category" this}}
                   {{#if this.subcategories}}
@@ -20,7 +20,7 @@
                         {{#each this.subcategories}}
                           <li class="search-category">
                           {{#if this.selected}}
-                            <div class ="fa fa-arrow-circle-o-right" style="float:left"></div>
+                            <div class="fa fa-arrow-circle-o-right active-category"></div>
                           {{/if}}
                           {{categorySearchLink "search_category" this}}
                           </li>
