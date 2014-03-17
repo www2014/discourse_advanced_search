@@ -8,10 +8,16 @@ Discourse.TopicsSearchRoute = Discourse.Route.extend({
     search_category: function (category) {
 
       var controller = this.controllerFor('topic_search');
-
+      if (category.get("selected")) {
+        console.log("selected");
+        controller.set("searchContext", false);
+      }
+      else {
+        console.log("not selected");
+        controller.set("searchContext", {type: "category", id: category.id});
+      }
       controller.activeMainCategory(category);
-
-      controller.set("searchContext", {type: "category", id: category.id});
+      //controller.set("searchContext", {type: "category", id: category.id});
       controller.searchTopicForTerm({without_category: true});
     }
 
