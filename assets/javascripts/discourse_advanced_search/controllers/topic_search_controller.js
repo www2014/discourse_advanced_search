@@ -1,7 +1,7 @@
 Discourse.TopicSearchController = Discourse.ObjectController.extend(Discourse.Presence, {
 
   needs: "search",
-  term: Em.computed.alias("controllers.search.term"),
+  term: Em.computed.alias("model.query"),
   searchContext: Em.computed.alias("controllers.search.searchContext"),
 
   content: [],
@@ -41,7 +41,7 @@ Discourse.TopicSearchController = Discourse.ObjectController.extend(Discourse.Pr
     var topicSearch = this.get('model'),
       topicStream = topicSearch.get('topicStream');
 
-    topicStream.forTerm(self.get('term'), {
+    topicStream.forTerm(topicSearch.get('query'), {
       without_category: options.without_category || false,
       searchContext: self.get('searchContext'),
       sortContext: {
@@ -66,7 +66,7 @@ Discourse.TopicSearchController = Discourse.ObjectController.extend(Discourse.Pr
 
     this.set("searchContext", null);
     return this.searchTopicForTerm();
-  }, 250).observes('term'),
+  }, 250).observes('model.query'),
 
   sortOrder: function() {
     return Discourse.SortOrder.create();
