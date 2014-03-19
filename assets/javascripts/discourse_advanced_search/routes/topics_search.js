@@ -1,7 +1,7 @@
 Discourse.TopicsSearchRoute = Discourse.Route.extend({
 
-  model: function(){
-    return Discourse.TopicSearch.create();
+  model: function(params){
+    return Discourse.TopicSearch.create({query: params.query});
   },
 
   actions: {

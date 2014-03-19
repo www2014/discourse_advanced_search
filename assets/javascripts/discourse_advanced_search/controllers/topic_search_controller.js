@@ -10,14 +10,6 @@ Discourse.TopicSearchController = Discourse.ObjectController.extend(Discourse.Pr
   loading: true,
   topicStream: null,
 
-  init: function(){
-    var self = this;
-    if ( typeof term == "undefined"){
-      var path_split = window.location.pathname.split('/');
-      self.set('term', path_split[path_split.length -1]);
-    }
-  },
-
   activeMainCategory: function(category){
     var self = this;
     var topicStream = self.get('topicStream'),
