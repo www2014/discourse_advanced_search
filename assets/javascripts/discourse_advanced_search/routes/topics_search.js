@@ -1,7 +1,7 @@
 Discourse.TopicsSearchRoute = Discourse.Route.extend({
 
-  model: function(){
-    return Discourse.TopicSearch.create();
+  model: function(params){
+    return Discourse.TopicSearch.create({query: params.query});
   },
 
   actions: {
@@ -25,7 +25,7 @@ Discourse.TopicsSearchRoute = Discourse.Route.extend({
 
   setupController: function(controller, model) {
     var controller = this.controllerFor('topic_search');
-    controller.set('model', model);    
+    controller.set('model', model);
 
     controller.searchTopicForTerm();
   },
