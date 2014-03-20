@@ -22,7 +22,7 @@ Discourse.TopicSearchController = Discourse.ObjectController.extend(Discourse.Pr
       }
       if (cat.subcategories) {
         cat.subcategories.forEach(function(sub_cat){
-          if(sub_cat.get('selected') && cat.id != category.id){
+          if(sub_cat.get('selected') && sub_cat.id != category.id){
             sub_cat.set('selected', false);
           }
         });
