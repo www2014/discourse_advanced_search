@@ -15,23 +15,21 @@ Discourse.TopicSearchController = Discourse.ObjectController.extend(Discourse.Pr
     var topicStream = self.get('topicStream'),
       categories = topicStream.get('categories');
 
-    var was_selected = category.get("selected");
     // need to be refactored
     categories.forEach(function(cat){
-      cat.set('selected', false);
+      if(cat.get('selected') && cat.id != category.id){
+        cat.set('selected', false);
+      }
       if (cat.subcategories) {
         cat.subcategories.forEach(function(sub_cat){
-          sub_cat.set('selected', false);
+          if(sub_cat.get('selected') && cat.id != category.id){
+            sub_cat.set('selected', false);
+          }
         });
       }
     });
-    if (was_selected) {
-      category.set('selected', false);
-    }
-    else {
-      category.set('selected', true);
-    }
-    
+
+    category.toggleProperty('selected');
 
 
     if (category.subcategories){

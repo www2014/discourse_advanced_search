@@ -9,10 +9,3 @@ Handlebars.registerHelper('topicSearchLink', function(property, options) {
     title = topic.get('fancy_title') || topic.get('title');
   return "<a href='" + topic.get('relative_url') + "' class='title'>" + title + "</a>";
 });
-
-Handlebars.registerHelper('categorySearchLink', function(property, options) {
-  var category = this;
-  var action = Ember.Handlebars.helpers.action.apply(this, arguments);
-  return new Handlebars.SafeString("<div style=\"color: white; background-color: #"+category.color+"\""+new Ember.Handlebars.SafeString(action)+">"+category.get("name")+"</div>");
-  //return new Handlebars.SafeString("<div "+new Ember.Handlebars.SafeString(action)+">"+category.get("name")+"</div>");
-});

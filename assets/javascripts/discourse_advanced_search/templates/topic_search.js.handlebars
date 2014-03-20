@@ -9,20 +9,14 @@
           {{#if topicStream.categories}}
             {{#each topicStream.categories}}
               {{#unless this.parent_category_id}}
-                <li class="search-category">
-                  {{#if this.selected}}
-                    <div class ="fa fa-arrow-circle-o-right active-category"></div>
-                  {{/if}}
-                  {{categorySearchLink "search_category" this}}
+                <li class="search-category" style="color: white; background-color: #{{unbound this.color}}">
+                  <div {{bind-attr class="this.selected:fa this.selected:fa-arrow-circle-o-right this.selected:active-category"}} {{ action "search_category" this }}>{{unbound this.name }}</div>
                   {{#if this.subcategories}}
                     {{#if this.active }}
                       <ul>
                         {{#each this.subcategories}}
-                          <li class="search-category">
-                          {{#if this.selected}}
-                            <div class="fa fa-arrow-circle-o-right active-category"></div>
-                          {{/if}}
-                          {{categorySearchLink "search_category" this}}
+                          <li class="search-category" style="color: white; background-color: #{{unbound this.color}}">
+                            <div {{bind-attr class="this.selected:fa this.selected:fa-arrow-circle-o-right this.selected:active-category"}} {{ action "search_category" this }}>{{unbound this.name }}</div>
                           </li>
                         {{/each}}
                       </ul>
