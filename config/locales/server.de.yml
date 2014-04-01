@@ -1,0 +1,4 @@
+de:
+  site_settings:
+    users_per_page: "Anzahl der Benutzer, die auf der Benutzerseite angezeigt werden"
+    users_show_limit: "Maximale Anzahl der Benutzer, die auf der Benutzerseite angezeigt werden"

@@ -1,0 +1,4 @@
+en:
+  site_settings:
+    topics_search_per_page: "Topics shown on the search page"
+    topics_search_show_limit: "Limit of topics shown on the search page"
