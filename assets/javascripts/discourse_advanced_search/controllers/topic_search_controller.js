@@ -47,10 +47,6 @@ Discourse.TopicSearchController = Discourse.ObjectController.extend(Discourse.Pr
 
       category.set('active', true);
     }
-
-    
-
-
     
     return;
   },
@@ -66,11 +62,11 @@ Discourse.TopicSearchController = Discourse.ObjectController.extend(Discourse.Pr
 
     topicStream.forTerm(topicSearch.get('query'), {
       without_category: options.without_category || false,
-      searchContext: self.get('searchContext'),
-      sortContext: {
-        sort_order: sortOrder.get('order'),
-        sort_descending: sortOrder.get('descending')
-      }
+      searchContext: self.get('searchContext')//,
+      //sortContext: {
+      //  sort_order: sortOrder.get('order'),
+      //  sort_descending: sortOrder.get('descending')
+      //}
     });
 
     this.set('topicStream', topicStream);
@@ -91,10 +87,10 @@ Discourse.TopicSearchController = Discourse.ObjectController.extend(Discourse.Pr
     return this.searchTopicForTerm();
   }, 250).observes('model.query'),
 
-  sortOrder: function() {
+  /*sortOrder: function() {
     return Discourse.SortOrder.create();
   }.property(),
-
+   */
   /**
    If the sort order changes, replace the topics in the list with the new
    order.

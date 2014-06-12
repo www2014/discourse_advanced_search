@@ -5,25 +5,38 @@ class TopicSearchView < Search
 
   def initialize(current_user, opts=nil)
     @guardian = Guardian.new(current_user)
+    opts[:guardian] = @guardian
     @sort_context = opts[:sort_context].present? && opts.delete(:sort_context) || {}
     term = opts.delete(:term)
     super(term, opts)
 
+    @topics = []
     if opts[:post_ids]
-      @topics = TopicList.new(:latest, current_user, topic_search(Post.where(id: opts[:post_ids]))).topics
+      #### Wenn posts nachgeladen werden (loadMore)
+      @topics = TopicList.new(:latest, current_user, topic_search(opts[:post_ids])).topics
     else
-      @topics = TopicList.new(:latest, current_user, topic_search(posts_query(limit: SiteSetting.topics_search_per_page))).topics
+      ### Beim ersten Aufruf sollen genau 25 Topics geladen werden
+      ### Falls zu wenige gefunden werden lade welche nach, bis mindestens 25 da sind
+      i = 0
+      while @topics.size < SiteSetting.topics_search_per_page
+        post_ids = filtered_topic_ids[SiteSetting.topics_search_per_page*i...SiteSetting.topics_search_per_page*(i+1)]
+        @topics += TopicList.new(:latest, current_user, topic_search(post_ids)).topics
+        i = i+1
+      end
+      @topics = @topics[0...SiteSetting.topics_search_per_page]
     end
   end
 
   def filtered_topic_ids
-    @filtered_topic_ids = @term ? posts_query(limit: SiteSetting.topics_search_show_limit).pluck(:id) : []
+    @filtered_topic_ids ||= @term ? posts_query(limit: SiteSetting.topics_search_show_limit).pluck(:id) : []
   end
 
   def categories
-    @categories = @term ? Category.joins(topics: {posts: :post_search_data}).where(posts: {id: posts_query}).order('position asc').distinct : []
+    @categories = @term ? Category.joins(topics: {posts: :post_search_data}).where(posts: {id: filtered_topic_ids}).order('position asc').distinct.to_a : []
+
     subcategories = {}
     to_delete = Set.new
+
     @categories.each do |c|
       if c.parent_category_id.present?
         subcategories[c.parent_category_id] ||= []
@@ -31,22 +44,29 @@ class TopicSearchView < Search
         to_delete << c
       end
     end
+    @main_categories = []
     if subcategories.present?
-      @categories.each do |c|
-        c.subcategory_ids = subcategories[c.id]
+      subcategories.each_pair do |main_cat_id, sub_category_ids|
+        main_cat = Category.find(main_cat_id)
+        main_cat.subcategory_ids = sub_category_ids
+        @main_categories << main_cat
       end
-      @categories.delete_if {|c| to_delete.include?(c) }
     end
-    @categories
+    @main_categories
   end
 
   private
 
-  def topic_search(posts)
+  def topic_search(post_ids)
+    posts = Post.where(id: post_ids).order(set_order_for(post_ids))
+
     single_topic_posts = only_single_topic(posts)
+    already_found_topic_ids = @topics.map(&:id)
 
     posts.map do |post|
+      ### Only one topic for multiple posts
       next if single_topic_posts[post.topic_id] != post
+      next if already_found_topic_ids.include?(post.topic_id)
       topic = post.topic
       topic = topic.becomes(TopicSearchResult)
       if post.post_number == 1
@@ -59,6 +79,7 @@ class TopicSearchView < Search
     end.compact
   end
 
+  ### Only one topic for multiple posts
   def only_single_topic(posts)
     single_topic_posts = {}
     posts.each do |post|
@@ -126,6 +147,14 @@ class TopicSearchView < Search
     else
       posts
     end
+  end
+
+  def set_order_for(post_ids)
+    sort_array = []
+    post_ids.each do |id|
+      sort_array << "id=#{id} desc"
+    end
+    sort_array.join(',')
   end
 
 end

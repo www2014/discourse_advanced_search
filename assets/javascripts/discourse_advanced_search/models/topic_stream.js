@@ -37,6 +37,7 @@ Discourse.TopicStream = Discourse.Model.extend({
    @method updateFromJson
    **/
   updateTopicsFromJson: function(topicStreamData) {
+
     var topicStream = this,
       topics = this.get('topics');
 
