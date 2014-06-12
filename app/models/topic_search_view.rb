@@ -18,11 +18,11 @@ class TopicSearchView < Search
       ### Beim ersten Aufruf sollen genau 25 Topics geladen werden
       ### Falls zu wenige gefunden werden lade welche nach, bis mindestens 25 da sind
       i = 0
-      while @topics.size < SiteSetting.topics_search_per_page
+      begin
         post_ids = filtered_topic_ids[SiteSetting.topics_search_per_page*i...SiteSetting.topics_search_per_page*(i+1)]
         @topics += TopicList.new(:latest, current_user, topic_search(post_ids)).topics
         i = i+1
-      end
+      end while @topics.size < SiteSetting.topics_search_per_page && filtered_topic_ids.size >= SiteSetting.topics_search_per_page
       @topics = @topics[0...SiteSetting.topics_search_per_page]
     end
   end
