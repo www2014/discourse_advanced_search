@@ -9,6 +9,18 @@ Discourse.TopicSearchController = Discourse.ObjectController.extend(Discourse.Pr
   urls: [],
   loading: true,
   topicStream: null,
+  ascending: false,
+
+  actions: {
+    changeSort: function(sortBy) {
+      if (sortBy === this.get('order')) {
+        this.toggleProperty('ascending');
+      } else {
+        this.setProperties({ order: sortBy, ascending: false });
+      }
+      this.searchTopicForTerm({ sortBy: sortBy, order: this.get('ascending') });
+    }
+  },
 
   activeMainCategory: function(category){
     var self = this;
@@ -55,18 +67,17 @@ Discourse.TopicSearchController = Discourse.ObjectController.extend(Discourse.Pr
     if (!options) options = {};
 
     var self = this;
-    var sortOrder = this.get('sortOrder');
 
     var topicSearch = this.get('model'),
       topicStream = topicSearch.get('topicStream');
 
     topicStream.forTerm(topicSearch.get('query'), {
       without_category: options.without_category || false,
-      searchContext: self.get('searchContext')//,
-      //sortContext: {
-      //  sort_order: sortOrder.get('order'),
-      //  sort_descending: sortOrder.get('descending')
-      //}
+      searchContext: self.get('searchContext'),
+      sortContext: {
+        sort_order: options.sortBy,
+        sort_descending: options.order
+      }
     });
 
     this.set('topicStream', topicStream);
@@ -86,20 +97,6 @@ Discourse.TopicSearchController = Discourse.ObjectController.extend(Discourse.Pr
     this.set("searchContext", null);
     return this.searchTopicForTerm();
   }, 250).observes('model.query'),
-
-  /*sortOrder: function() {
-    return Discourse.SortOrder.create();
-  }.property(),
-   */
-  /**
-   If the sort order changes, replace the topics in the list with the new
-   order.
-
-   @observes sortOrder
-   **/
-  _sortOrderChanged: function() {
-    return this.searchTopicForTerm({without_category: true});
-  }.observes('sortOrder.order', 'sortOrder.descending'),
 
   /**
    Called the the bottommost visible topics on the page changes.
